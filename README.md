@@ -423,6 +423,48 @@ If you are driving the MCP server with an Ollama model, here are concise prompt 
 
 Tip: Ollama models often respond more reliably when you explicitly request machine-readable output (JSON) and show a short example of the expected schema in the prompt.
 
+### Prompt templates and JSON output (Ollama)
+
+Below are compact prompt patterns that work well with Ollama models and the project's adapters. They encourage consistent, machine-readable replies that your MCP tools can consume directly.
+
+- Simple system + user template:
+
+```text
+System: You are an assistant that outputs a single JSON object describing the result.
+User: Summarize ticket #12345 in one paragraph, propose an assignee, and include an estimated priority.
+
+Expected JSON schema:
+{
+  "summary": "<one-paragraph-summary>",
+  "suggested_assignee": "<email_or_name>",
+  "estimated_priority": <1|2|3|4>
+}
+```
+
+- JSON-array response example (when listing items):
+
+```text
+User: List all open high-priority incidents and return a JSON array with fields: ticket_id, subject, suggested_owner
+
+Expected output example:
+[
+  {"ticket_id":12345, "subject":"Email outage", "suggested_owner":"ops@example.com"},
+  {"ticket_id":12346, "subject":"VPN failure", "suggested_owner":"netadmin@example.com"}
+]
+```
+
+- Curl example (explicitly request JSON):
+
+```bash
+curl -sX POST "$OLLAMA_API_BASE/api/generate?model=$OLLAMA_MODEL" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"System: You are an assistant that outputs JSON.\nUser: Summarize ticket #12345 as JSON.","max_tokens":256}' | jq .
+```
+
+Notes:
+- If your Ollama instance requires authentication, include the `OLLAMA_API_KEY` in the `Authorization: Bearer <key>` header.
+- When integrating into the MCP flow, validate the model output against the expected schema before calling tool functions (defensive parsing avoids accidental malformed calls).
+
 ## Using with GitHub Copilot
 
 You can ask GitHub Copilot (or Copilot Chat) to generate helper code snippets that interact with Freshservice or the MCP server. Below are example Copilot prompts and a minimal starter snippet you can store in your repo for quick edits.
