@@ -300,6 +300,43 @@ pip install uv
 uvx freshservice-mcp --env FRESHSERVICE_APIKEY=<your_api_key> --env FRESHSERVICE_DOMAIN=<your_domain>
 ```
 
+### Running in VS Code
+
+To run and debug the MCP server from VS Code using the project's virtual environment:
+
+1. Select the project's Python interpreter (Command Palette → **Python: Select Interpreter**) and pick the virtualenv Python (for example: `${workspaceFolder}/.venv311/bin/python`).
+
+2. Create a `.env` file at the repository root or set environment variables in your system. Example `.env`:
+
+```
+FRESHSERVICE_APIKEY=<your_api_key>
+FRESHSERVICE_DOMAIN=yourcompany.freshservice.com
+```
+
+3. Add a VS Code debug configuration at `.vscode/launch.json` (create the file if it doesn't exist):
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run MCP server",
+      "type": "python",
+      "request": "launch",
+      "module": "freshservice_mcp.server",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
+```
+
+4. Start the configuration `Run MCP server` from the Run view. Your server will start in the integrated terminal and use the environment variables from `.env`.
+
+Notes:
+- The project defines a console script `freshservice-mcp` (see `pyproject.toml`) but running via the module (`freshservice_mcp.server`) works reliably from the VS Code debugger.
+- If you prefer to run the packaged entry point, install the package into your venv (`pip install -e .`) and run the `freshservice-mcp` command from the terminal.
+
 ## Example Operations
 
 Once configured, you can ask Claude to perform operations like:
@@ -357,4 +394,4 @@ This MCP server is licensed under the MIT License. See the [LICENSE](LICENSE) fi
 
 ---
 
-<p align="center">Built with ❤️ by Your Name</p>
+<!-- Footer removed -->
