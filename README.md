@@ -374,6 +374,45 @@ pip install -e ".[dev]"
 pytest tests/
 ```
 
+## Using with Ollama (examples)
+
+If you are running a local Ollama daemon (or Ollama Cloud), set the base URL and model name and then call the generate endpoint.
+
+1) Environment variables
+
+```bash
+export OLLAMA_API_BASE="http://localhost:11434"
+export OLLAMA_MODEL="gpt4all"  # replace with your model
+# Optional: if your Ollama instance expects an API key
+export OLLAMA_API_KEY="<your_key>"
+```
+
+2) Quick curl example
+
+```bash
+curl -sX POST "$OLLAMA_API_BASE/api/generate?model=$OLLAMA_MODEL" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Summarize the ticket: ...","max_tokens":128}' | jq .
+```
+
+3) Python (async) example — use the project's adapter:
+
+```py
+import asyncio
+from freshservice_mcp.llm import generate
+
+async def main():
+    # Ensure OLLAMA_API_BASE and OLLAMA_MODEL are set in your environment
+    resp = await generate("Summarize this ticket...", model="gpt4all", max_tokens=128)
+    print(resp)
+
+asyncio.run(main())
+```
+
+Notes:
+- The project's `generate()` helper will prefer OpenClaw if `OPENCLAW_API_BASE` is set, then Ollama if `OLLAMA_API_BASE` is set, otherwise OpenAI.
+- When debugging in VS Code, add `OLLAMA_API_BASE` and `OLLAMA_MODEL` to your `.env` (or `envFile`) so the debugger picks them up.
+
 ## Troubleshooting
 
 - **Verify your Freshservice API key and domain are correct**
