@@ -251,6 +251,62 @@ Notes:
 
 See the full deployment checklist and secrets guidance in [DEPLOYMENT.md](DEPLOYMENT.md).
 
+## Additional LLM Resources
+
+Useful links and docs for the LLM endpoints referenced in this project:
+
+- Ollama:
+  - Official site & docs: https://ollama.ai/
+  - API reference (local daemon): https://ollama.ai/docs
+
+- OpenClaw (gateway):
+  - OpenClaw project (if public): check your internal docs or gateway README for API specifics.
+  - Common patterns: POST /api/generate with JSON payload {"prompt":..., "max_tokens":...}
+
+## OpenClaw — Usage Examples
+
+OpenClaw is used here as a small, internal inference gateway. The project helper at `src/freshservice_mcp/openclaw.py` expects a JSON response and returns parsed JSON or an error dict. Below are examples to drive a local OpenClaw-compatible service.
+
+1) Environment
+
+```bash
+export OPENCLAW_API_BASE="http://localhost:11434"
+export OPENCLAW_API_KEY="<your_key>"         # optional
+export OPENCLAW_GENERATE_PATH="/api/generate" # optional
+```
+
+2) Quick curl example
+
+```bash
+curl -sX POST "$OPENCLAW_API_BASE$OPENCLAW_GENERATE_PATH" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENCLAW_API_KEY" \ 
+  -d '{"prompt":"Summarize ticket #12345 in one paragraph","max_tokens":128}' | jq .
+```
+
+3) Python (async) example — using the project's adapter
+
+```py
+import asyncio
+from freshservice_mcp.openclaw import generate
+
+async def main():
+    # ensure OPENCLAW_API_BASE is set in environment
+    resp = await generate("Summarize ticket #12345 in one paragraph", model="claw-1", max_tokens=128)
+    # resp is either parsed JSON or an error dict; handle defensively
+    if resp.get("error"):
+        print("OpenClaw error:", resp)
+    else:
+        print("OpenClaw response:", resp)
+
+asyncio.run(main())
+```
+
+Notes:
+- OpenClaw response shapes vary by gateway — inspect `resp` and adapt parsing accordingly.
+- Validate model output before passing it to MCP tool functions (defensive parsing).
+
+
 ### Prerequisites
 
 - A Freshservice account (sign up at [freshservice.com](https://www.freshservice.com))
