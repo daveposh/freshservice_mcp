@@ -53,3 +53,9 @@ pyvenv.cfg
 # Misc
 *.egg
 *.whl
+
+# ruff cache
+.ruff_cache/
+
+# Local continuation folder
+.continue/
