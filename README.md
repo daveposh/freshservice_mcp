@@ -413,6 +413,46 @@ Notes:
 - The project's `generate()` helper will prefer OpenClaw if `OPENCLAW_API_BASE` is set, then Ollama if `OLLAMA_API_BASE` is set, otherwise OpenAI.
 - When debugging in VS Code, add `OLLAMA_API_BASE` and `OLLAMA_MODEL` to your `.env` (or `envFile`) so the debugger picks them up.
 
+## Example Operations — Ollama
+
+If you are driving the MCP server with an Ollama model, here are concise prompt examples that work well with the project's adapters. Send these as the model prompt (or include them inside a structured system/instruction message):
+
+- "Summarize ticket #12345 in one paragraph and propose a short, actionable resolution and assignee. Include estimated priority."
+- "Create an incident ticket: subject 'Email outage in Sales', description 'Several users cannot access email; steps tried: restart client, cleared cache', suggest priority and tags, and provide the JSON payload for the `create_ticket` tool."
+- "List all open high-priority incidents and provide a one-line suggested owner for each. Respond in JSON array format with fields: ticket_id, subject, suggested_owner."
+
+Tip: Ollama models often respond more reliably when you explicitly request machine-readable output (JSON) and show a short example of the expected schema in the prompt.
+
+## Using with GitHub Copilot
+
+You can ask GitHub Copilot (or Copilot Chat) to generate helper code snippets that interact with Freshservice or the MCP server. Below are example Copilot prompts and a minimal starter snippet you can store in your repo for quick edits.
+
+Copilot prompt (example):
+
+"Write an async Python function `create_incident(subject, description)` that uses `httpx` to call Freshservice's REST API to create a ticket. Use `FRESHSERVICE_APIKEY` and `FRESHSERVICE_DOMAIN` from environment variables and return the created ticket JSON. Include proper error handling and a short docstring."
+
+Expected minimal generated snippet (edit as needed):
+
+```py
+import os
+import httpx
+
+async def create_incident(subject: str, description: str) -> dict:
+  """Create an incident ticket in Freshservice and return the response JSON."""
+  api_key = os.environ["FRESHSERVICE_APIKEY"]
+  domain = os.environ["FRESHSERVICE_DOMAIN"]
+  url = f"https://{domain}/api/v2/tickets"
+  headers = {"Content-Type": "application/json"}
+  auth = (api_key, "X")
+  payload = {"subject": subject, "description": description, "status": 2}
+  async with httpx.AsyncClient() as client:
+    r = await client.post(url, json={"helpdesk_ticket": payload}, auth=auth, headers=headers, timeout=30)
+    r.raise_for_status()
+    return r.json()
+```
+
+You can prompt Copilot to adapt this snippet to call MCP tools directly (for example, by wrapping it to send the JSON payload to your local MCP server or by generating an MCP-based client). Copilot excels at producing these adapters quickly — provide the package/module names and a one-line example of the call you expect.
+
 ## Troubleshooting
 
 - **Verify your Freshservice API key and domain are correct**
