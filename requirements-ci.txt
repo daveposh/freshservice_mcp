@@ -1,0 +1,7 @@
+bandit==1.8.1
+# allow newer safety releases to be installed to avoid packaging compatibility issues
+safety>=2.3.2
+ruff==0.15.7
+# upgrade black to a non-vulnerable release
+black>=24.3.0
+pytest==7.3.2
