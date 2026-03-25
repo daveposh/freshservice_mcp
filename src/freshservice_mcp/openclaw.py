@@ -14,11 +14,10 @@ Return value: parsed JSON response from OpenClaw, or a minimal error dict.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
 import os
+from typing import Any, Dict, Optional
 
 import httpx
-
 
 DEFAULT_TIMEOUT = 10.0
 
@@ -46,7 +45,9 @@ async def generate(
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
 
-    async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT, verify=True, follow_redirects=False) as client:
+    async with httpx.AsyncClient(
+        timeout=DEFAULT_TIMEOUT, verify=True, follow_redirects=False
+    ) as client:
         try:
             resp = await client.post(url, json=payload, headers=headers)
             resp.raise_for_status()
@@ -55,7 +56,9 @@ async def generate(
             # return a minimal sanitized error
             return {
                 "error": "openclaw_request_failed",
-                "status_code": e.response.status_code if e.response is not None else None,
+                "status_code": (
+                    e.response.status_code if e.response is not None else None
+                ),
                 "message": e.response.text if e.response is not None else str(e),
             }
         except httpx.HTTPError as e:

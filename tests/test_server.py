@@ -1,10 +1,8 @@
-import os
-import asyncio
+import importlib
 from unittest.mock import patch
 
+import httpx
 import pytest
-
-import importlib
 
 # Import server inside tests after setting env to ensure module-level env reads pick up monkeypatch
 
@@ -18,7 +16,7 @@ class MockResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise server.httpx.HTTPStatusError("error", request=None, response=self)
+            raise httpx.HTTPStatusError("error", request=None, response=self)
 
     def json(self):
         return self._json
@@ -59,7 +57,12 @@ async def test_create_ticket_success(monkeypatch):
     # Patch the AsyncClient used in the server module
     with patch.object(server.httpx, "AsyncClient", client_factory):
         result = await server.create_ticket(
-            subject="Test", description="desc", source=1, priority=1, status=2, email="a@b.com"
+            subject="Test",
+            description="desc",
+            source=1,
+            priority=1,
+            status=2,
+            email="a@b.com",
         )
 
     assert isinstance(result, str)

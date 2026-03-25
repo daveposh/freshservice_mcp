@@ -804,7 +804,8 @@ async def close_change(
     custom_fields: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Close a change and provide the result explanation.
-    This is a convenience function that updates status to Closed and sets the result explanation."""
+    This is a convenience function that updates status to Closed and sets the result explanation.
+    """
 
     update_data = {
         "status": ChangeStatus.CLOSED.value,

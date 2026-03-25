@@ -11,12 +11,11 @@ The function returns a dict with either `{'text': <str>}` on success or an
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import httpx
 
 from . import openclaw
-
 
 DEFAULT_TIMEOUT = 15.0
 
@@ -61,7 +60,11 @@ async def _openai_call(prompt: str, model: str, max_tokens: int) -> Dict[str, An
                 return {"error": "no_text_in_response", "response": data}
             return {"text": text}
         except httpx.HTTPStatusError as e:
-            return {"error": "openai_http_error", "status_code": e.response.status_code, "body": e.response.text}
+            return {
+                "error": "openai_http_error",
+                "status_code": e.response.status_code,
+                "body": e.response.text,
+            }
         except Exception as e:
             return {"error": "openai_error", "message": str(e)}
 
@@ -91,12 +94,18 @@ async def _ollama_call(prompt: str, model: str, max_tokens: int) -> Dict[str, An
                 return {"text": data["text"]}
             return {"text": str(data)}
         except httpx.HTTPStatusError as e:
-            return {"error": "ollama_http_error", "status_code": e.response.status_code, "body": e.response.text}
+            return {
+                "error": "ollama_http_error",
+                "status_code": e.response.status_code,
+                "body": e.response.text,
+            }
         except Exception as e:
             return {"error": "ollama_error", "message": str(e)}
 
 
-async def generate(prompt: str, model: str = "gpt-4", max_tokens: int = 256) -> Dict[str, Any]:
+async def generate(
+    prompt: str, model: str = "gpt-4", max_tokens: int = 256
+) -> Dict[str, Any]:
     """Generate text using the first available provider in order:
     1. OpenClaw (OPENCLAW_API_BASE)
     2. Ollama (OLLAMA_API_BASE)
