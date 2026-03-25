@@ -34,6 +34,7 @@ async def test_openclaw_success(monkeypatch):
             return DummyResponse({"text": "This is a summary"}, status=200)
 
     monkeypatch.setattr(httpx, "AsyncClient", DummyClient)
+    monkeypatch.setenv("OPENCLAW_API_BASE", "http://localhost:11434")
 
     from freshservice_mcp.openclaw import generate
 
@@ -71,6 +72,7 @@ async def test_openclaw_http_error(monkeypatch):
             return DummyResponse(status=500, text="internal")
 
     monkeypatch.setattr(httpx, "AsyncClient", DummyClient)
+    monkeypatch.setenv("OPENCLAW_API_BASE", "http://localhost:11434")
 
     from freshservice_mcp.openclaw import generate
 
