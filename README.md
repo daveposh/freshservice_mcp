@@ -495,6 +495,63 @@ async def create_incident(subject: str, description: str) -> dict:
 
 You can prompt Copilot to adapt this snippet to call MCP tools directly (for example, by wrapping it to send the JSON payload to your local MCP server or by generating an MCP-based client). Copilot excels at producing these adapters quickly — provide the package/module names and a one-line example of the call you expect.
 
+### VS Code Copilot — Prompts & Example Snippets
+
+Use these concise Copilot prompts and example snippets directly in Copilot Chat or as prompt templates.
+
+- Copilot Chat prompt (create incident):
+
+```
+Generate an async function `create_incident(subject, description)` that uses `httpx.AsyncClient` and reads `FRESHSERVICE_APIKEY` and `FRESHSERVICE_DOMAIN` from environment variables. It should POST to Freshservice `/api/v2/tickets`, call `r.raise_for_status()` on non-2xx responses, and return the parsed JSON. Include a short docstring and basic error handling.
+```
+
+- Expected Copilot-generated function (minimal):
+
+```py
+import os
+import httpx
+
+async def create_incident(subject: str, description: str) -> dict:
+  """Create an incident ticket in Freshservice and return the response JSON."""
+  api_key = os.getenv("FRESHSERVICE_APIKEY")
+  domain = os.getenv("FRESHSERVICE_DOMAIN")
+  if not api_key or not domain:
+    raise RuntimeError("Missing FRESHSERVICE_APIKEY or FRESHSERVICE_DOMAIN")
+
+  url = f"https://{domain}/api/v2/tickets"
+  payload = {"helpdesk_ticket": {"subject": subject, "description": description, "status": 2}}
+  async with httpx.AsyncClient() as client:
+    r = await client.post(url, json=payload, auth=(api_key, "X"))
+    r.raise_for_status()
+    return r.json()
+```
+
+- Copilot prompt (MCP wrapper):
+
+```
+Write `mcp_create_ticket(payload)` that posts `payload` to `http://localhost:3000/tools/create_ticket` using `httpx.AsyncClient`, returns parsed JSON, and raises a clear error on non-200 responses.
+```
+
+- Copilot prompt (validate model output):
+
+```
+Create `validate_ticket_summary(obj)` that ensures `obj` has keys `summary`, `suggested_assignee`, and `estimated_priority` (int in 1..4). Raise `ValueError` if invalid.
+```
+
+- Copilot prompt (test scaffold):
+
+```
+Generate a pytest async test `test_create_incident_happy_path` that mocks `httpx.AsyncClient.post` to return a 201 and asserts that `create_incident` returns a JSON with `ticket_id`.
+```
+
+Tips to steer Copilot:
+
+- Start prompts with the exact function signature you want.
+- Provide a one-line example of the expected return schema (small JSON sample).
+- Ask for error handling and tests in the same prompt to get full deliverables.
+
+Would you like me to insert one complete generated function and test into the repo (and push), or just keep these examples in the README? 
+
 ## Troubleshooting
 
 - **Verify your Freshservice API key and domain are correct**
