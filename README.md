@@ -499,6 +499,15 @@ Expected JSON schema:
 
 - JSON-array response example (when listing items):
 
+## Microsoft 365 Copilot (Copilot for Business)
+
+This repository includes guidance for using Microsoft 365 Copilot (Copilot for Business) with the FreshService MCP server. See [copilot-instructions.md](copilot-instructions.md) for tenant-admin steps, sample prompts, privacy notes, and a short admin checklist to help you safely index and surface documentation to Copilot.
+
+Quick tips:
+- Add `README.md` and `copilot-instructions.md` to your tenant knowledge source (SharePoint/semantic index) so Copilot can reference up-to-date run instructions and examples.
+- Exclude `.env` and other secret files from indexing. Store API keys in Azure Key Vault or tenant secrets and reference them as placeholders in docs.
+
+
 ```text
 User: List all open high-priority incidents and return a JSON array with fields: ticket_id, subject, suggested_owner
 
