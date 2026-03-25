@@ -1,7 +1,5 @@
 # FreshService MCP Server
 
-[![smithery badge](https://smithery.ai/badge/@effytech/freshservice_mcp)](https://github.com/effytech/freshservice_mcp)
-
 ## Overview
 
 A powerful MCP (Model Context Protocol) server implementation that seamlessly integrates with Freshservice, enabling AI models to interact with Freshservice modules and perform various IT service management operations. This integration bridge empowers your AI assistants to manage and resolve IT service tickets, streamlining your support workflow.
@@ -250,14 +248,6 @@ Notes:
 
   - The helper returns the parsed JSON response or a minimal error dict on failure.
 
-
-### Installing via Smithery
-
-To install freshservice_mcp automatically via Smithery:
-
-```bash
-npx -y @smithery/cli install @effytech/freshservice_mcp --client claude
-```
 
 See the full deployment checklist and secrets guidance in [DEPLOYMENT.md](DEPLOYMENT.md).
 
